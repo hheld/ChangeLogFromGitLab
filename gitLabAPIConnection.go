@@ -4,7 +4,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -20,9 +22,20 @@ type commit struct {
 	Title   string `json:"title"`
 	Author  string `json:"author_name"`
 	Email   string `json:"author_email"`
+	Message string `json:"message"`
+}
+
+type changeDescription struct {
+	Type    string
+	Scope   string
+	Subject string
+	Body    string
+	Footer  string
 }
 
 const apiURL = "/api/v3"
+
+var reCommitMsg = regexp.MustCompile(`(?m:(feat|fix|docs|style|refactor|perf|test|chore)\(([^\(\)]+)\): ([^\n]+)$\n^$\n((?:\n|.)+)^$\n((?:(?:[Rr]efs|[Cc]loses) #\d+\n)+))$`)
 
 func newGitLabAPIConnection(gitLabBaseURL, privateToken string) *gitLabAPIConnection {
 	tr := &http.Transport{
@@ -137,6 +150,24 @@ TotalLoop:
 			if commit.ID == configInfo.ToSha || isInRange {
 				commitInfo = append(commitInfo, commit)
 				isInRange = true
+
+				match := reCommitMsg.Match([]byte(commit.Message))
+
+				if match {
+					fmt.Printf("Match: %v, %s\n", match, commit.ID)
+
+					matches := reCommitMsg.FindAllStringSubmatch(commit.Message, -1)
+
+					chgDesc := changeDescription{
+						Type:    matches[0][1],
+						Scope:   matches[0][2],
+						Subject: matches[0][3],
+						Body:    matches[0][4],
+						Footer:  matches[0][5],
+					}
+
+					fmt.Printf("Matches: %+v\n", chgDesc)
+				}
 			}
 
 			if commit.ID == configInfo.FromSha {
