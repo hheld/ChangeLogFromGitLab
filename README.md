@@ -12,7 +12,7 @@ $newrev  = ARGV[2]
 puts "Enforcing Policies..."
 puts "(#{$refname}) (#{$oldrev[0,6]}) (#{$newrev[0,6]})"
 
-$regex = /(feat|fix|docs|style|refactor|perf|test|chore)\(([^\(\)]+)\): ([^\n]+)$\n^$\n((?:\n|.)+)^$\n((?:(?:[Rr]efs|[Cc]loses) #\d+\n)+)$/m
+$regex = /(?:(feat|fix|docs|style|refactor|perf|test|chore)\(([^\(\)]+)\): ([^\n]+)$\n^$\n((?:\n|.)+)^$\n((?:(?:[Rr]efs|[Cc]loses) #\d+\n)+)|Merge .*)$/m
 
 # enforced custom commit message format
 def check_message_format
