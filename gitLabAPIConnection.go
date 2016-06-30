@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -16,21 +15,22 @@ type gitLabAPIConnection struct {
 	client  *http.Client
 }
 
-type commit struct {
-	ID      string `json:"id"`
-	ShortID string `json:"short_id"`
-	Title   string `json:"title"`
-	Author  string `json:"author_name"`
-	Email   string `json:"author_email"`
-	Message string `json:"message"`
-}
-
 type changeDescription struct {
 	Type    string
 	Scope   string
 	Subject string
 	Body    string
 	Footer  string
+}
+
+type commit struct {
+	ID        string `json:"id"`
+	ShortID   string `json:"short_id"`
+	Title     string `json:"title"`
+	Author    string `json:"author_name"`
+	Email     string `json:"author_email"`
+	Message   string `json:"message"`
+	ChageDesc *changeDescription
 }
 
 const apiURL = "/api/v3"
@@ -101,6 +101,7 @@ func (c *gitLabAPIConnection) projectIDFromName(projectName string) (int, error)
 	return -1, errors.New("No project named '" + projectName + "' found")
 }
 
+// allCommits returns all commits in the configured range that match the message format given by the regex.
 func (c *gitLabAPIConnection) allCommits() ([]commit, error) {
 	pid, err := c.projectIDFromName(configInfo.ProjectName)
 
@@ -148,14 +149,11 @@ TotalLoop:
 
 		for _, commit := range commits {
 			if commit.ID == configInfo.ToSha || configInfo.ToSha == "HEAD" || isInRange {
-				commitInfo = append(commitInfo, commit)
 				isInRange = true
 
 				match := reCommitMsg.Match([]byte(commit.Message))
 
 				if match {
-					fmt.Printf("Match: %v, %s\n", match, commit.ID)
-
 					matches := reCommitMsg.FindAllStringSubmatch(commit.Message, -1)
 
 					chgDesc := changeDescription{
@@ -166,7 +164,9 @@ TotalLoop:
 						Footer:  matches[0][5],
 					}
 
-					fmt.Printf("Matches: %+v\n", chgDesc)
+					commit.ChageDesc = &chgDesc
+
+					commitInfo = append(commitInfo, commit)
 				}
 			}
 
