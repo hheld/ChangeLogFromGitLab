@@ -4,7 +4,7 @@ package main
 
 func main() {
 	//ci, err := apiConn.allCommits()
-    _, err := apiConn.allCommits()
+	_, err := apiConn.allCommits()
 
 	if err != nil {
 		panic(err)

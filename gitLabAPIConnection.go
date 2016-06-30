@@ -147,7 +147,7 @@ TotalLoop:
 		}
 
 		for _, commit := range commits {
-			if commit.ID == configInfo.ToSha || isInRange {
+			if commit.ID == configInfo.ToSha || configInfo.ToSha == "HEAD" || isInRange {
 				commitInfo = append(commitInfo, commit)
 				isInRange = true
 
