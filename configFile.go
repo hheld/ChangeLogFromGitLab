@@ -12,6 +12,8 @@ type config struct {
 	ProjectName string
 	FromSha     string
 	ToSha       string
+	AppName     string
+	AppVersion  string
 }
 
 const configFileLocation = "config"

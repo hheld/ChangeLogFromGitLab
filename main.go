@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func main() {
 	ci, err := apiConn.allCommits()
 
@@ -9,9 +7,13 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Commits: %+v\nNumber of commits: %d\n", ci, len(ci))
-
 	sortedMsg, _ := sortedChangeLogMessages(ci)
 
-	fmt.Printf("Sorted messages:\n%+v\n", sortedMsg)
+	//fmt.Printf("Sorted messages:\n%+v\n", sortedMsg)
+
+	err = generateChangeLogHTML(sortedMsg, "ChangeLog.html")
+
+	if err != nil {
+		panic(err)
+	}
 }
