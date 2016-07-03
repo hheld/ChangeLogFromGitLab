@@ -14,7 +14,7 @@ type config struct {
 	ToSha       string
 }
 
-const configFileLocation = "config"
+const configFileLocation = "changeLogConfig"
 
 var (
 	configInfo config
