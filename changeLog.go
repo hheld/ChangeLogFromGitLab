@@ -14,13 +14,13 @@ const changeLogTemplate = `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Change log for {{.AppName}}</title>
+        <title>Change log</title>
     </head>
     <body>
-        <h1>Change log for {{.AppName}} version {{.AppVersion}}</h1>
+        <h1>Change log</h1>
         {{- range $type, $scopeMessages := .Changes}}
             {{- if filter $type}}
-            <h2>{{$type}}</h2>
+            <h2>{{$type | name}}</h2>
             <ul>
             {{- range $scope, $messages := $scopeMessages}}
                 <li>
@@ -81,9 +81,25 @@ func filterTypes(typeName changeType) bool {
 	}
 }
 
+func typeName(typeName changeType) string {
+	switch typeName {
+	case "feat":
+		return "New features"
+	case "fix":
+		return "Bug fixes"
+	case "docs":
+		return "Documentation"
+	case "perf":
+		return "Performance improvements"
+	default:
+		return string(typeName)
+	}
+}
+
 func generateChangeLogHTML(chg changes, filePath string) error {
 	funcMap := template.FuncMap{
 		"filter": filterTypes,
+		"name":   typeName,
 	}
 
 	tmpl, err := template.New("changeLog").Funcs(funcMap).Parse(changeLogTemplate)
@@ -99,13 +115,9 @@ func generateChangeLogHTML(chg changes, filePath string) error {
 	}
 
 	err = tmpl.Execute(f, struct {
-		Changes    changes
-		AppName    string
-		AppVersion string
+		Changes changes
 	}{
-		Changes:    chg,
-		AppName:    configInfo.AppName,
-		AppVersion: configInfo.AppVersion,
+		Changes: chg,
 	})
 
 	if err != nil {
