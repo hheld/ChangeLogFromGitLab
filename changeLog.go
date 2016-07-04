@@ -74,7 +74,8 @@ func filterTypes(typeName changeType) bool {
 	case "feat",
 		"fix",
 		"docs",
-		"perf":
+		"perf",
+		"refactor":
 		return true
 	default:
 		return false
@@ -91,6 +92,8 @@ func typeName(typeName changeType) string {
 		return "Documentation"
 	case "perf":
 		return "Performance improvements"
+	case "refactor":
+		return "Internal changes"
 	default:
 		return string(typeName)
 	}
