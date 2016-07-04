@@ -1,6 +1,14 @@
 package main
 
+import "flag"
+
+func init() {
+	flag.StringVar(&configInfo.ToSha, "ToSha", configInfo.ToSha, "Set commit hash up to which the change log should be generated")
+}
+
 func main() {
+	flag.Parse()
+
 	ci, err := apiConn.allCommits()
 
 	if err != nil {
@@ -8,8 +16,6 @@ func main() {
 	}
 
 	sortedMsg, _ := sortedChangeLogMessages(ci)
-
-	//fmt.Printf("Sorted messages:\n%+v\n", sortedMsg)
 
 	err = generateChangeLogHTML(sortedMsg, "ChangeLog.html")
 
