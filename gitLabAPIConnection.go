@@ -4,9 +4,11 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 type gitLabAPIConnection struct {
@@ -24,13 +26,14 @@ type changeDescription struct {
 }
 
 type commit struct {
-	ID        string `json:"id"`
-	ShortID   string `json:"short_id"`
-	Title     string `json:"title"`
-	Author    string `json:"author_name"`
-	Email     string `json:"author_email"`
-	Message   string `json:"message"`
-	ChageDesc *changeDescription
+	ID         string `json:"id"`
+	ShortID    string `json:"short_id"`
+	Title      string `json:"title"`
+	Author     string `json:"author_name"`
+	Email      string `json:"author_email"`
+	Message    string `json:"message"`
+	CommitDate string `json:"created_at"`
+	ChageDesc  *changeDescription
 }
 
 const apiURL = "/api/v3"
@@ -172,6 +175,14 @@ TotalLoop:
 
 			if commit.ID == configInfo.FromSha {
 				isInRange = false
+
+				fmt.Printf("raw: %s", commit.CommitDate)
+				changeLogStartDate, err = time.Parse(time.RFC3339Nano, commit.CommitDate)
+
+				if err != nil {
+					return nil, err
+				}
+
 				break TotalLoop
 			}
 		}

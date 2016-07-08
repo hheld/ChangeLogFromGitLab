@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"os"
+	"time"
 )
 
 type changeType string
@@ -17,7 +18,7 @@ const changeLogTemplate = `<!DOCTYPE html>
         <title>Change log</title>
     </head>
     <body>
-        <h1>Change log</h1>
+        <h1>Change log since {{.SinceDate}}</h1>
         {{- range $type, $scopeMessages := .Changes}}
             {{- if filter $type}}
             <h2>{{$type | name}}</h2>
@@ -38,6 +39,8 @@ const changeLogTemplate = `<!DOCTYPE html>
     </body>
 </html>
 `
+
+var changeLogStartDate time.Time
 
 func isStringInSlice(a string, list []string) bool {
 	for _, b := range list {
@@ -118,9 +121,11 @@ func generateChangeLogHTML(chg changes, filePath string) error {
 	}
 
 	err = tmpl.Execute(f, struct {
-		Changes changes
+		Changes   changes
+		SinceDate time.Time
 	}{
-		Changes: chg,
+		Changes:   chg,
+		SinceDate: changeLogStartDate,
 	})
 
 	if err != nil {
