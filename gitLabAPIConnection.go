@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -176,7 +175,6 @@ TotalLoop:
 			if commit.ID == configInfo.FromSha {
 				isInRange = false
 
-				fmt.Printf("raw: %s", commit.CommitDate)
 				changeLogStartDate, err = time.Parse(time.RFC3339Nano, commit.CommitDate)
 
 				if err != nil {
