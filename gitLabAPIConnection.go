@@ -52,7 +52,7 @@ func newGitLabAPIConnection(gitLabBaseURL, privateToken string) *gitLabAPIConnec
 }
 
 func (c *gitLabAPIConnection) getRequest(endPoint string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", c.baseURL+apiURL+endPoint, nil)
+	req, err := http.NewRequest("GET", c.baseURL+apiURL+endPoint + "?per_page=100", nil)
 
 	if err != nil {
 		return nil, err
