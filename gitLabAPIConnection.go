@@ -35,7 +35,7 @@ type commit struct {
 	ChageDesc  *changeDescription
 }
 
-const apiURL = "/api/v3"
+const apiURL = "/api/v4"
 
 var reCommitMsg = regexp.MustCompile(`(?m:(feat|fix|docs|style|refactor|perf|test|chore)\(([^\(\)]+)\): ([^\n]+)$\n^$\n((?:\n|.)+)^$\n((?:(?:[Rr]efs|[Cc]loses) #\d+\n)+))$`)
 
