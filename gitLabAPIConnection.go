@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 type gitLabAPIConnection struct {
@@ -51,8 +52,8 @@ func newGitLabAPIConnection(gitLabBaseURL, privateToken string) *gitLabAPIConnec
 	}
 }
 
-func (c *gitLabAPIConnection) getRequest(endPoint string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", c.baseURL+apiURL+endPoint + "?per_page=1000&membership=true", nil)
+func (c *gitLabAPIConnection) getRequest(endPoint, options string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", c.baseURL+apiURL+endPoint + "?per_page=1000&membership=true&" + options, nil)
 
 	if err != nil {
 		return nil, err
@@ -64,7 +65,7 @@ func (c *gitLabAPIConnection) getRequest(endPoint string) (*http.Request, error)
 }
 
 func (c *gitLabAPIConnection) projectIDFromName(projectName string) (int, error) {
-	req, err := c.getRequest("/projects")
+	req, err := c.getRequest("/projects", "")
 
 	if err != nil {
 		return -1, err
@@ -119,8 +120,9 @@ func (c *gitLabAPIConnection) allCommits() ([]commit, error) {
 
 TotalLoop:
 	for {
-		req, err := c.getRequest("/projects/" + strconv.Itoa(pid) + "/repository/commits?page=" + strconv.Itoa(pageNo))
+		req, err := c.getRequest("/projects/" + strconv.Itoa(pid) + "/repository/commits", "page=" + strconv.Itoa(pageNo))
 
+		fmt.Printf("re: %+v\n", req)
 		if err != nil {
 			return nil, err
 		}
@@ -189,5 +191,6 @@ TotalLoop:
 		res.Body.Close()
 	}
 
+	fmt.Printf("%+v\n", commitInfo)
 	return commitInfo, nil
 }
